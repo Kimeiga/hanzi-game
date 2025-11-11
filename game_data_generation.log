@@ -1,0 +1,92 @@
+   Compiling chinese-word-game v0.1.0 (/Users/haki/code/chinese-word-game)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.57s
+     Running `target/debug/chinese-word-game`
+🚀 Starting HSK level analysis and game data generation...
+📚 Loading Chinese word dictionary...
+  Loaded 10000 Chinese entries...
+  Loaded 20000 Chinese entries...
+  Loaded 30000 Chinese entries...
+  Loaded 40000 Chinese entries...
+  Loaded 50000 Chinese entries...
+  Loaded 60000 Chinese entries...
+  Loaded 70000 Chinese entries...
+  Loaded 80000 Chinese entries...
+  Loaded 90000 Chinese entries...
+  Loaded 100000 Chinese entries...
+  Loaded 110000 Chinese entries...
+  Loaded 120000 Chinese entries...
+  Loaded 130000 Chinese entries...
+  Loaded 140000 Chinese entries...
+  ✅ Loaded 145580 Chinese entries total
+📚 Loading Chinese character dictionary...
+  ✅ Loaded 93736 Chinese character entries
+
+📊 HSK Level Analysis
+
+============================================================
+
+🔤 WORD DICTIONARY ANALYSIS:
+------------------------------------------------------------
+Total words: 145580
+Words with statistics: 117078
+Words without statistics: 28502
+
+HSK Level Distribution:
+  HSK 1:   4394 words ( 3.75%)
+  HSK 2:   9835 words ( 8.40%)
+  HSK 3:  14237 words (12.16%)
+  HSK 4:  13568 words (11.59%)
+  HSK 5:   9984 words ( 8.53%)
+  HSK 6:  12167 words (10.39%)
+  HSK 7:  28106 words (24.01%)
+  No HSK (level 10):  24735 words (21.13%)
+
+📝 CHARACTER DICTIONARY ANALYSIS:
+------------------------------------------------------------
+Total characters: 93736
+Characters with statistics: 14222
+Characters without statistics: 79514
+
+HSK Level Distribution:
+  HSK 1:    249 characters ( 1.75%)
+  HSK 2:    229 characters ( 1.61%)
+  HSK 3:    239 characters ( 1.68%)
+  HSK 4:    268 characters ( 1.88%)
+  HSK 5:    294 characters ( 2.07%)
+  HSK 6:    322 characters ( 2.26%)
+  HSK 7:   1314 characters ( 9.24%)
+  No HSK (level 10):  11307 characters (79.50%)
+
+============================================================
+
+✅ Analysis complete!
+
+🎮 Extracting HSK words for game data...
+  HSK 1: 4394 words
+  HSK 2: 9835 words
+  HSK 3: 14237 words
+  HSK 4: 13568 words
+  HSK 5: 9984 words
+  HSK 6: 12167 words
+  HSK 7: 28106 words
+
+📖 Loading IDS (character decomposition) data...
+  ✅ Loaded 20568 from ids/IDS-UCS-Basic.txt
+  ✅ Loaded 6582 from ids/IDS-UCS-Ext-A.txt
+  📊 Total unique IDS entries: 27150
+
+🎮 Building game data structures...
+🔧 Building character decompositions...
+  ✅ Built 27150 character decompositions
+🔧 Building components → characters mapping...
+  ✅ Built 26633 component combinations
+🔧 Extracting allowed components from HSK words...
+  ✅ Found 580 unique leaf components
+
+💾 Saving game data...
+  ✅ Saved character decompositions to game_data/char_to_decomposition.json
+  ✅ Saved components mapping to game_data/components_to_chars.json
+  ✅ Saved allowed components to game_data/allowed_components.json
+  ✅ Saved HSK words to game_data/hsk_words.json
+
+✅ All done! Game data saved to game_data/ directory
