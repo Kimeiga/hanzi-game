@@ -493,7 +493,7 @@
 
 	.gloss-container {
 		margin-bottom: 2rem;
-		text-align: left;
+		text-align: center;
 	}
 
 	.gloss-lines {
