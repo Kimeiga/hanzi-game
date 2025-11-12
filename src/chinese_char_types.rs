@@ -16,6 +16,10 @@ pub struct ChineseCharacter {
     pub stroke_count: i64,
     pub sources: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<String>,  // Some entries have this field (usually null)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub custom_sources: Option<Vec<String>>,  // Some entries have custom sources
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub images: Option<Vec<Image>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shuowen: Option<String>,
@@ -146,7 +150,8 @@ pub struct Component {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct OldPronunciation {
     pub pinyin: String,
-    pub source: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gloss: Option<String>,
     #[serde(rename = "MC")]
