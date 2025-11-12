@@ -156,7 +156,20 @@
 	function handleSubmit() {
 		if (!gameState || !gameData) return;
 
-		const isCorrect = checkAnswer(gameState.availableCards, gameState.targetWord);
+		// Check if the target word is in available cards
+		let isCorrect = checkAnswer(gameState.availableCards, gameState.targetWord);
+
+		// If not correct, check if selected cards can form the target word
+		if (!isCorrect && gameState.selectedCards.length > 0) {
+			// Check if the selected cards can combine into the target word
+			if (gameState.possibleCombinations.includes(gameState.targetWord)) {
+				// Auto-combine the selected cards into the target word
+				console.log('🎯 Auto-combining selected cards into target word before checking answer');
+				handleCombine(gameState.targetWord);
+				// Now check again
+				isCorrect = checkAnswer(gameState.availableCards, gameState.targetWord);
+			}
+		}
 
 		if (isCorrect) {
 			gameState.won = true;
