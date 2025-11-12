@@ -275,16 +275,19 @@ fn extract_char_glosses_with_top_words(chars: &[ChineseCharacter]) -> HashMap<St
             if let Some(ref top_words) = stats.top_words {
                 for top_word in top_words.iter().take(3) {
                     // Try to replace the character with underscore in the word
-                    // First try the character itself, then try simplified/traditional variants
+                    // Check both simplified (word) and traditional (trad) forms
                     let mut word_with_underscore = top_word.word.replace(&char_entry.char, "_");
 
-                    // If no replacement happened, try the traditional form from the top word
+                    // If no replacement in simplified, try traditional form
                     if !word_with_underscore.contains('_') && top_word.trad != top_word.word {
-                        word_with_underscore = top_word.trad.replace(&char_entry.char, "_");
+                        let trad_with_underscore = top_word.trad.replace(&char_entry.char, "_");
+                        if trad_with_underscore.contains('_') {
+                            word_with_underscore = trad_with_underscore;
+                        }
                     }
 
                     // If still no underscore, the character might not appear in this word
-                    // (could be a variant issue), so just show the word as-is
+                    // (could be an unrelated variant), so mark with asterisk
                     if !word_with_underscore.contains('_') {
                         word_with_underscore = format!("{}*", top_word.word);
                     }
