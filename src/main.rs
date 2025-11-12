@@ -286,10 +286,25 @@ fn extract_char_glosses_with_top_words(chars: &[ChineseCharacter]) -> HashMap<St
                         }
                     }
 
-                    // If still no underscore, the character might not appear in this word
-                    // (could be an unrelated variant), so mark with asterisk
+                    // If still no underscore, try replacing the variantOf character
+                    // (e.g., 龢 is a variant of 和, so replace 和 with _)
                     if !word_with_underscore.contains('_') {
-                        word_with_underscore = format!("{}*", top_word.word);
+                        if let Some(ref variant_of) = char_entry.variant_of {
+                            let variant_replaced = top_word.word.replace(variant_of, "_");
+                            if variant_replaced.contains('_') {
+                                word_with_underscore = variant_replaced;
+                            } else if top_word.trad != top_word.word {
+                                let trad_variant_replaced = top_word.trad.replace(variant_of, "_");
+                                if trad_variant_replaced.contains('_') {
+                                    word_with_underscore = trad_variant_replaced;
+                                }
+                            }
+                        }
+                    }
+
+                    // If still no underscore after all attempts, just use _ as fallback
+                    if !word_with_underscore.contains('_') {
+                        word_with_underscore = String::from("_");
                     }
 
                     let formatted = format!("{} ({})", word_with_underscore, top_word.gloss);
