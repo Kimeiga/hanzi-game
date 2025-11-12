@@ -307,7 +307,11 @@
 
 		<!-- Gloss -->
 		<div class="gloss-container">
-			<h2 class="gloss">{gameState.targetGloss}</h2>
+			<div class="gloss-lines">
+				{#each gameState.targetGloss.split('; ') as line}
+					<div class="gloss-line">{line}</div>
+				{/each}
+			</div>
 			<div class="attempts">Attempts: {gameState.attemptsLeft}/{gameState.maxAttempts}</div>
 		</div>
 
@@ -329,6 +333,33 @@
 				<span class="answer-fallback" style="display: none;">{gameState.targetWord}</span>
 			</div>
 		{/if}
+
+		<!-- Available Cards -->
+		<div class="cards-container">
+			<h3>Available Components:</h3>
+			<div class="cards">
+				{#each gameState.availableCards as card (card.id)}
+					<button
+						class="card"
+						class:selected={gameState.selectedCards.some((c) => c.id === card.id)}
+						class:leaf={card.isLeaf}
+						class:hinted={highlightedCardIds.has(card.id)}
+						onclick={() => toggleCardSelection(card)}
+					>
+						<img
+							src={getGlyphWikiUrl(card.character)}
+							alt={card.character}
+							class="card-glyph"
+							onerror={(e) => {
+								e.currentTarget.style.display = 'none';
+								e.currentTarget.nextElementSibling.style.display = 'block';
+							}}
+						/>
+						<span class="card-fallback" style="display: none;">{card.character}</span>
+					</button>
+				{/each}
+			</div>
+		</div>
 
 		<!-- Possible Combinations -->
 		{#if gameState.possibleCombinations.length > 0}
@@ -373,33 +404,6 @@
 				</button>
 			</div>
 		{/if}
-
-		<!-- Available Cards -->
-		<div class="cards-container">
-			<h3>Available Components:</h3>
-			<div class="cards">
-				{#each gameState.availableCards as card (card.id)}
-					<button
-						class="card"
-						class:selected={gameState.selectedCards.some((c) => c.id === card.id)}
-						class:leaf={card.isLeaf}
-						class:hinted={highlightedCardIds.has(card.id)}
-						onclick={() => toggleCardSelection(card)}
-					>
-						<img
-							src={getGlyphWikiUrl(card.character)}
-							alt={card.character}
-							class="card-glyph"
-							onerror={(e) => {
-								e.currentTarget.style.display = 'none';
-								e.currentTarget.nextElementSibling.style.display = 'block';
-							}}
-						/>
-						<span class="card-fallback" style="display: none;">{card.character}</span>
-					</button>
-				{/each}
-			</div>
-		</div>
 
 		<!-- Action Buttons -->
 		<div class="actions">
@@ -449,8 +453,12 @@
 		max-width: 800px;
 		margin: 0 auto;
 		padding: 2rem;
+		padding-bottom: 8rem; /* Space for fixed buttons */
 		text-align: center;
 		font-family: system-ui, -apple-system, sans-serif;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.loading,
@@ -486,13 +494,25 @@
 
 	.gloss-container {
 		margin-bottom: 2rem;
+		text-align: left;
 	}
 
-	.gloss {
-		font-size: 2rem;
-		font-weight: 700;
+	.gloss-lines {
+		margin-bottom: 1rem;
+	}
+
+	.gloss-line {
+		font-size: 1.5rem;
+		font-weight: 600;
 		margin-bottom: 0.5rem;
 		color: #1f2937;
+		line-height: 1.6;
+	}
+
+	.gloss-line:first-child {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #6366f1;
 	}
 
 	.attempts {
@@ -665,10 +685,18 @@
 	}
 
 	.actions {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
 		display: flex;
 		gap: 1rem;
 		justify-content: center;
-		margin-top: 2rem;
+		padding: 1.5rem;
+		background: white;
+		border-top: 2px solid #e5e7eb;
+		box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+		z-index: 10;
 	}
 
 	.action-button {
@@ -709,6 +737,7 @@
 		color: white;
 		font-size: 1.25rem;
 		padding: 1rem 2rem;
+		max-width: 400px;
 		width: 100%;
 	}
 
