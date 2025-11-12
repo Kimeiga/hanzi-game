@@ -456,9 +456,6 @@
 		padding-bottom: 8rem; /* Space for fixed buttons */
 		text-align: center;
 		font-family: system-ui, -apple-system, sans-serif;
-		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
 	}
 
 	.loading,
