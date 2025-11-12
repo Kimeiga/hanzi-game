@@ -35,6 +35,11 @@ fn main() -> Result<()> {
     let word_glosses = extract_word_glosses(&chinese_words);
     println!("  ✅ Extracted {} word glosses", word_glosses.len());
 
+    // Extract character glosses with top words
+    println!("\n📖 Extracting character glosses with top words...");
+    let char_glosses = extract_char_glosses_with_top_words(&chinese_chars);
+    println!("  ✅ Extracted {} character glosses", char_glosses.len());
+
     // Load IDS data
     println!("\n📖 Loading IDS (character decomposition) data...");
     let ids_map = load_all_ids()
@@ -52,6 +57,10 @@ fn main() -> Result<()> {
     // Save word glosses
     save_word_glosses(&word_glosses, "game_data/word_glosses.json")
         .context("Failed to save word glosses")?;
+
+    // Save character glosses
+    save_word_glosses(&char_glosses, "game_data/char_glosses.json")
+        .context("Failed to save character glosses")?;
 
     println!("\n✅ All done! Game data saved to game_data/ directory");
 
@@ -244,6 +253,51 @@ fn extract_word_glosses(words: &[ChineseDictionaryElement]) -> HashMap<String, V
         // Only add if we found at least one definition
         if !all_definitions.is_empty() {
             glosses.insert(word.trad.clone(), all_definitions);
+        }
+    }
+
+    glosses
+}
+
+fn extract_char_glosses_with_top_words(chars: &[ChineseCharacter]) -> HashMap<String, Vec<String>> {
+    let mut glosses = HashMap::new();
+
+    for char_entry in chars {
+        let mut all_definitions = Vec::new();
+
+        // Add the main gloss if available
+        if let Some(ref gloss) = char_entry.gloss {
+            all_definitions.push(gloss.clone());
+        }
+
+        // Add top 3 words with underscores showing where the character appears
+        if let Some(ref stats) = char_entry.statistics {
+            if let Some(ref top_words) = stats.top_words {
+                for top_word in top_words.iter().take(3) {
+                    // Try to replace the character with underscore in the word
+                    // First try the character itself, then try simplified/traditional variants
+                    let mut word_with_underscore = top_word.word.replace(&char_entry.char, "_");
+
+                    // If no replacement happened, try the traditional form from the top word
+                    if !word_with_underscore.contains('_') && top_word.trad != top_word.word {
+                        word_with_underscore = top_word.trad.replace(&char_entry.char, "_");
+                    }
+
+                    // If still no underscore, the character might not appear in this word
+                    // (could be a variant issue), so just show the word as-is
+                    if !word_with_underscore.contains('_') {
+                        word_with_underscore = format!("{}*", top_word.word);
+                    }
+
+                    let formatted = format!("{} ({})", word_with_underscore, top_word.gloss);
+                    all_definitions.push(formatted);
+                }
+            }
+        }
+
+        // Only add if we found at least one definition
+        if !all_definitions.is_empty() {
+            glosses.insert(char_entry.char.clone(), all_definitions);
         }
     }
 

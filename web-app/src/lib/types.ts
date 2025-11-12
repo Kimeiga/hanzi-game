@@ -9,7 +9,8 @@ export interface GameData {
 	componentsToChars: Record<string, string[]>;
 	allowedComponents: string[];
 	hskWords: Record<string, string[]>;
-	wordGlosses?: Record<string, string[]>; // Array of definitions
+	wordGlosses?: Record<string, string[]>; // Array of definitions for words
+	charGlosses?: Record<string, string[]>; // Array of definitions for characters (includes top words)
 }
 
 export interface Card {

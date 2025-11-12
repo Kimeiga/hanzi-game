@@ -18,7 +18,7 @@ export async function loadGameData(): Promise<GameData> {
 	// }
 
 	console.log('📥 Loading game data...');
-	const [charToDecomp, componentsToChars, allowedComponents, hskWords, wordGlosses] = await Promise.all([
+	const [charToDecomp, componentsToChars, allowedComponents, hskWords, wordGlosses, charGlosses] = await Promise.all([
 		fetch('/game_data/char_to_decomposition.json').then((r) => r.json()),
 		fetch('/game_data/components_to_chars.json').then((r) => r.json()),
 		fetch('/game_data/allowed_components.json').then((r) => r.json()),
@@ -26,17 +26,22 @@ export async function loadGameData(): Promise<GameData> {
 		fetch('/game_data/word_glosses.json').then((r) => r.json()).catch((e) => {
 			console.warn('⚠️ Failed to load word glosses:', e);
 			return {};
+		}),
+		fetch('/game_data/char_glosses.json').then((r) => r.json()).catch((e) => {
+			console.warn('⚠️ Failed to load char glosses:', e);
+			return {};
 		})
 	]);
 
-	console.log('✅ Loaded glosses:', Object.keys(wordGlosses).length, 'words');
+	console.log('✅ Loaded glosses:', Object.keys(wordGlosses).length, 'words,', Object.keys(charGlosses).length, 'chars');
 
 	gameData = {
 		charToDecomposition: charToDecomp,
 		componentsToChars,
 		allowedComponents,
 		hskWords,
-		wordGlosses
+		wordGlosses,
+		charGlosses
 	};
 
 	return gameData;
@@ -544,7 +549,11 @@ export function initializeGameState(data: GameData): GameState {
 	const cards = createCardsFromComponents(components, data);
 
 	// Get definitions for the target word (join array into string)
-	const definitions = data.wordGlosses?.[targetWord];
+	// Use character glosses for single characters (includes top words with underscores)
+	const isSingleChar = targetWord.length === 1;
+	const definitions = isSingleChar
+		? data.charGlosses?.[targetWord]
+		: data.wordGlosses?.[targetWord];
 	const targetGloss = definitions && definitions.length > 0
 		? definitions.join('; ')
 		: `Word: ${targetWord}`;
@@ -641,7 +650,11 @@ export function nextRound(state: GameState, data: GameData): GameState {
 	const cards = createCardsFromComponents(components, data);
 
 	// Get definitions for the target word (join array into string)
-	const definitions = data.wordGlosses?.[targetWord];
+	// Use character glosses for single characters (includes top words with underscores)
+	const isSingleChar = targetWord.length === 1;
+	const definitions = isSingleChar
+		? data.charGlosses?.[targetWord]
+		: data.wordGlosses?.[targetWord];
 	const targetGloss = definitions && definitions.length > 0
 		? definitions.join('; ')
 		: `Word: ${targetWord}`;

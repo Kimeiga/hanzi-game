@@ -108,6 +108,17 @@
 		// Update possible combinations
 		if (gameData) {
 			gameState.possibleCombinations = findPossibleCombinations(gameState.selectedCards, gameData);
+
+			// Auto-submit if there's only one possible combination and it's the target word
+			if (gameState.possibleCombinations.length === 1 &&
+			    gameState.possibleCombinations[0] === gameState.targetWord) {
+				console.log('🎯 Auto-submitting: only one combination possible and it\'s the target!');
+				message = '🎯 Perfect! Auto-combining and submitting...';
+				// Automatically combine into the target
+				handleCombine(gameState.targetWord);
+				// Then auto-submit
+				setTimeout(() => handleSubmit(), 100);
+			}
 		}
 	}
 
