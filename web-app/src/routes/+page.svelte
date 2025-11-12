@@ -54,8 +54,12 @@
 		const { components, decoyWords } = getComponentsWithDecoys(targetWord, hskLevel, data);
 		const cards = createCardsFromComponents(components, data);
 
-		// Get definitions for the target word
-		const definitions = data.wordGlosses?.[targetWord];
+		// Get definitions for the target word (join array into string)
+		// Use character glosses for single characters (includes top words with underscores)
+		const isSingleChar = targetWord.length === 1;
+		const definitions = isSingleChar
+			? data.charGlosses?.[targetWord]
+			: data.wordGlosses?.[targetWord];
 		const targetGloss = definitions && definitions.length > 0
 			? definitions.join('; ')
 			: `Word: ${targetWord}`;
