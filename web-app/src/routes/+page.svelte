@@ -307,6 +307,9 @@
 			<div class="hints-counter">💡 Hints used: {gameState.totalHintsUsed}</div>
 		</header>
 
+		<!-- Explorer Link -->
+		<a href="/explorer" class="explorer-link">🌌 Explore Hanzi Universe</a>
+
 		<!-- Gloss -->
 		<div class="gloss-container">
 			<div class="gloss-lines">
@@ -793,5 +796,24 @@
 
 	.reset-button:hover {
 		background: #b91c1c;
+	}
+
+	.explorer-link {
+		display: inline-block;
+		margin-bottom: 1rem;
+		padding: 0.5rem 1rem;
+		background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+		color: #60a5fa;
+		text-decoration: none;
+		border-radius: 0.5rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		border: 2px solid #334155;
+		transition: all 0.2s;
+	}
+
+	.explorer-link:hover {
+		border-color: #60a5fa;
+		transform: translateY(-1px);
 	}
 </style>
