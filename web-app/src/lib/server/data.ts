@@ -42,79 +42,78 @@ let jlptKanji: Record<string, string[]> | null = null;
 let joyoKanji: string[] | null = null;
 let kanjiDetails: Record<string, KanjiDetail> | null = null;
 
-// Base URL for fetching static files - works in both dev and production
-function getBaseUrl(): string {
-	// In production on Vercel, use the deployment URL
-	if (process.env.VERCEL_URL) {
-		return `https://${process.env.VERCEL_URL}`;
-	}
-	// In development, use localhost
-	return 'http://localhost:5173';
-}
+// Type for the fetch function passed from SvelteKit load functions
+type FetchFn = typeof fetch;
 
-async function loadJSON<T>(filename: string): Promise<T> {
-	const url = `${getBaseUrl()}/game_data/${filename}`;
+async function loadJSON<T>(filename: string, fetchFn: FetchFn, origin: string): Promise<T> {
+	const url = `${origin}/game_data/${filename}`;
 	console.log(`📥 Fetching ${filename} from ${url}`);
-	const response = await fetch(url);
+	const response = await fetchFn(url);
 	if (!response.ok) {
 		throw new Error(`Failed to load ${filename}: ${response.status}`);
 	}
 	return response.json() as Promise<T>;
 }
 
+// Context type for data loading - passed from SvelteKit load functions
+export interface DataLoadContext {
+	fetch: FetchFn;
+	origin: string;
+}
+
 // Async loaders with caching
-export async function getSemanticGraph(): Promise<TreeNode> {
+export async function getSemanticGraph(ctx: DataLoadContext): Promise<TreeNode> {
 	if (!semanticGraph) {
-		semanticGraph = await loadJSON<TreeNode>('hanzi_semantic_graph.json');
+		semanticGraph = await loadJSON<TreeNode>('hanzi_semantic_graph.json', ctx.fetch, ctx.origin);
 	}
 	return semanticGraph;
 }
 
-export async function getCharGlosses(): Promise<Record<string, string>> {
+export async function getCharGlosses(ctx: DataLoadContext): Promise<Record<string, string>> {
 	if (!charGlosses) {
-		charGlosses = await loadJSON<Record<string, string>>('char_glosses.json');
+		charGlosses = await loadJSON<Record<string, string>>('char_glosses.json', ctx.fetch, ctx.origin);
 	}
 	return charGlosses;
 }
 
-export async function getEquations(): Promise<Record<string, EquationData>> {
+export async function getEquations(ctx: DataLoadContext): Promise<Record<string, EquationData>> {
 	if (!equations) {
-		equations = await loadJSON<Record<string, EquationData>>('character_equations.json');
+		equations = await loadJSON<Record<string, EquationData>>('character_equations.json', ctx.fetch, ctx.origin);
 	}
 	return equations;
 }
 
-export async function getComponentGlosses(): Promise<Record<string, string>> {
+export async function getComponentGlosses(ctx: DataLoadContext): Promise<Record<string, string>> {
 	if (!componentGlosses) {
-		componentGlosses = await loadJSON<Record<string, string>>('component_glosses.json');
+		componentGlosses = await loadJSON<Record<string, string>>('component_glosses.json', ctx.fetch, ctx.origin);
 	}
 	return componentGlosses;
 }
 
-export async function getHskWords(): Promise<Record<string, string[]>> {
+export async function getHskWords(ctx: DataLoadContext): Promise<Record<string, string[]>> {
 	if (!hskWords) {
-		hskWords = await loadJSON<Record<string, string[]>>('hsk_words.json');
+		hskWords = await loadJSON<Record<string, string[]>>('hsk_words.json', ctx.fetch, ctx.origin);
 	}
 	return hskWords;
 }
 
-export async function getJlptKanji(): Promise<Record<string, string[]>> {
+export async function getJlptKanji(ctx: DataLoadContext): Promise<Record<string, string[]>> {
 	if (!jlptKanji) {
-		jlptKanji = await loadJSON<Record<string, string[]>>('jlpt_kanji.json');
+		jlptKanji = await loadJSON<Record<string, string[]>>('jlpt_kanji.json', ctx.fetch, ctx.origin);
 	}
 	return jlptKanji;
 }
 
-export async function getJoyoKanji(): Promise<string[]> {
+export async function getJoyoKanji(ctx: DataLoadContext): Promise<string[]> {
 	if (!joyoKanji) {
-		joyoKanji = await loadJSON<string[]>('joyo_kanji.json');
+		joyoKanji = await loadJSON<string[]>('joyo_kanji.json', ctx.fetch, ctx.origin);
 	}
 	return joyoKanji;
 }
 
-export async function getKanjiDetails(): Promise<Record<string, KanjiDetail>> {
+export async function getKanjiDetails(ctx: DataLoadContext): Promise<Record<string, KanjiDetail>> {
 	if (!kanjiDetails) {
-		kanjiDetails = await loadJSON<Record<string, KanjiDetail>>('kanji_details.json');
+		kanjiDetails = await loadJSON<Record<string, KanjiDetail>>('kanji_details.json', ctx.fetch, ctx.origin);
 	}
 	return kanjiDetails;
 }
