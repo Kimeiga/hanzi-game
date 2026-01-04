@@ -4,17 +4,17 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
 	// Build reverse lookup: character -> JLPT level
-	const jlptData = getJlptKanji();
+	const jlptData = await getJlptKanji();
 	const charToJlpt: Record<string, string> = {};
 	for (const [level, chars] of Object.entries(jlptData)) {
 		for (const char of chars) {
 			charToJlpt[char] = level;
 		}
 	}
-	
+
 	return {
-		joyoList: getJoyoKanji(),
-		kanjiDetails: getKanjiDetails(),
+		joyoList: await getJoyoKanji(),
+		kanjiDetails: await getKanjiDetails(),
 		charToJlpt
 	};
 };

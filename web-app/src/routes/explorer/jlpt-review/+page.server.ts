@@ -4,8 +4,8 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
 	return {
-		jlptData: getJlptKanji(),
-		kanjiDetails: getKanjiDetails()
+		jlptData: await getJlptKanji(),
+		kanjiDetails: await getKanjiDetails()
 	};
 };
 

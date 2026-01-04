@@ -5,10 +5,10 @@ import { getSemanticGraph, getCharGlosses, buildCharToBreadcrumb } from '$lib/se
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async () => {
-	const semanticGraph = getSemanticGraph();
-	const charGlosses = getCharGlosses();
+	const semanticGraph = await getSemanticGraph();
+	const charGlosses = await getCharGlosses();
 	const charToBreadcrumb = buildCharToBreadcrumb(semanticGraph);
-	
+
 	return {
 		semanticGraph,
 		charGlosses,

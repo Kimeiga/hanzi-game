@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
 	return {
-		hskData: getHskWords()
+		hskData: await getHskWords()
 	};
 };
 

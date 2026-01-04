@@ -1,9 +1,6 @@
 // Server-side data loading and caching
 // This module loads JSON data once and caches it in memory
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
-
 // Type definitions
 export interface CharNode {
 	char: string;
@@ -45,76 +42,79 @@ let jlptKanji: Record<string, string[]> | null = null;
 let joyoKanji: string[] | null = null;
 let kanjiDetails: Record<string, KanjiDetail> | null = null;
 
-// Path to static data files
-const DATA_DIR = join(process.cwd(), 'static', 'game_data');
-
-function loadJSON<T>(filename: string): T {
-	const filepath = join(DATA_DIR, filename);
-	const content = readFileSync(filepath, 'utf-8');
-	return JSON.parse(content) as T;
+// Base URL for fetching static files - works in both dev and production
+function getBaseUrl(): string {
+	// In production on Vercel, use the deployment URL
+	if (process.env.VERCEL_URL) {
+		return `https://${process.env.VERCEL_URL}`;
+	}
+	// In development, use localhost
+	return 'http://localhost:5173';
 }
 
-// Lazy loaders with caching
-export function getSemanticGraph(): TreeNode {
+async function loadJSON<T>(filename: string): Promise<T> {
+	const url = `${getBaseUrl()}/game_data/${filename}`;
+	console.log(`📥 Fetching ${filename} from ${url}`);
+	const response = await fetch(url);
+	if (!response.ok) {
+		throw new Error(`Failed to load ${filename}: ${response.status}`);
+	}
+	return response.json() as Promise<T>;
+}
+
+// Async loaders with caching
+export async function getSemanticGraph(): Promise<TreeNode> {
 	if (!semanticGraph) {
-		console.log('📥 Loading semantic graph...');
-		semanticGraph = loadJSON<TreeNode>('hanzi_semantic_graph.json');
+		semanticGraph = await loadJSON<TreeNode>('hanzi_semantic_graph.json');
 	}
 	return semanticGraph;
 }
 
-export function getCharGlosses(): Record<string, string> {
+export async function getCharGlosses(): Promise<Record<string, string>> {
 	if (!charGlosses) {
-		console.log('📥 Loading char glosses...');
-		charGlosses = loadJSON<Record<string, string>>('char_glosses.json');
+		charGlosses = await loadJSON<Record<string, string>>('char_glosses.json');
 	}
 	return charGlosses;
 }
 
-export function getEquations(): Record<string, EquationData> {
+export async function getEquations(): Promise<Record<string, EquationData>> {
 	if (!equations) {
-		console.log('📥 Loading equations...');
-		equations = loadJSON<Record<string, EquationData>>('character_equations.json');
+		equations = await loadJSON<Record<string, EquationData>>('character_equations.json');
 	}
 	return equations;
 }
 
-export function getComponentGlosses(): Record<string, string> {
+export async function getComponentGlosses(): Promise<Record<string, string>> {
 	if (!componentGlosses) {
-		console.log('📥 Loading component glosses...');
-		componentGlosses = loadJSON<Record<string, string>>('component_glosses.json');
+		componentGlosses = await loadJSON<Record<string, string>>('component_glosses.json');
 	}
 	return componentGlosses;
 }
 
-export function getHskWords(): Record<string, string[]> {
+export async function getHskWords(): Promise<Record<string, string[]>> {
 	if (!hskWords) {
-		console.log('📥 Loading HSK words...');
-		hskWords = loadJSON<Record<string, string[]>>('hsk_words.json');
+		hskWords = await loadJSON<Record<string, string[]>>('hsk_words.json');
 	}
 	return hskWords;
 }
 
-export function getJlptKanji(): Record<string, string[]> {
+export async function getJlptKanji(): Promise<Record<string, string[]>> {
 	if (!jlptKanji) {
-		console.log('📥 Loading JLPT kanji...');
-		jlptKanji = loadJSON<Record<string, string[]>>('jlpt_kanji.json');
+		jlptKanji = await loadJSON<Record<string, string[]>>('jlpt_kanji.json');
 	}
 	return jlptKanji;
 }
 
-export function getJoyoKanji(): string[] {
+export async function getJoyoKanji(): Promise<string[]> {
 	if (!joyoKanji) {
-		console.log('📥 Loading Joyo kanji...');
-		joyoKanji = loadJSON<string[]>('joyo_kanji.json');
+		joyoKanji = await loadJSON<string[]>('joyo_kanji.json');
 	}
 	return joyoKanji;
 }
 
-export function getKanjiDetails(): Record<string, KanjiDetail> {
+export async function getKanjiDetails(): Promise<Record<string, KanjiDetail>> {
 	if (!kanjiDetails) {
-		console.log('📥 Loading kanji details...');
-		kanjiDetails = loadJSON<Record<string, KanjiDetail>>('kanji_details.json');
+		kanjiDetails = await loadJSON<Record<string, KanjiDetail>>('kanji_details.json');
 	}
 	return kanjiDetails;
 }
